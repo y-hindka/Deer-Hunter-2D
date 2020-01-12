@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class TimerScript : MonoBehaviour
 {
 
-    private Text timerText;
+    private TMPro.TextMeshProUGUI timerText;
 
     public static float time;
 
@@ -17,14 +17,14 @@ public class TimerScript : MonoBehaviour
 
     private float deltaTime;
 
-    private bool keepTiming = true;
+    public static bool keepTiming = true;
 
     // Start is called before the first frame update
     void Start()
     {
         levelUpImage.SetActive(false);
         levelUpImage.transform.position = levelUpImageVector;
-        timerText = GetComponent<Text>();
+        timerText = GetComponent<TMPro.TextMeshProUGUI>();
         time = 60;
     }
 
@@ -64,8 +64,8 @@ public class TimerScript : MonoBehaviour
 
     IEnumerator WaitStopLevel()
     {
-        yield return new WaitForSeconds(0.5f);
         levelUpImage.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
     }
 
     IEnumerator WaitResumeLevel()
@@ -94,8 +94,15 @@ public class TimerScript : MonoBehaviour
     {
         timerText.text = "Time: " + time;
         levelScript.level += 1;
-        scoreCounter.totalScore += scoreCounter.score;
-        scoreCounter.score = 0;
+        if (MoveDeer.deerCount >= levelScript.level)
+        {
+            scoreCounter.totalScore += (scoreCounter.score - 10* MoveDeer.deerCount);
+        }
+        else
+        {
+            scoreCounter.totalScore += scoreCounter.score;
+        }
+        scoreCounter.score = 80;
         FireBullet.allowShoot = 1;
         MoveDeer.spawnDelay -= 1f;
         StartCoroutine(WaitStopLevel());

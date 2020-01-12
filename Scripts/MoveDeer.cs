@@ -10,29 +10,59 @@ public class MoveDeer : MonoBehaviour
 
     public GameObject deer;
 
+    public static int deerCount = 0;
+
     private int health = 100;
+
+    private Vector2 deerPos;
 
     public static float spawnDelay = 5f;
 
     private float timer;
+
+    private float initialSpawnCount = 0;
     
 
     // Start is called before the first frame update
     void Start()
     {
-        
-        rb.position = new Vector2(1.12f, 0f);
+        deerPos = new Vector2(Random.Range(-8.1f, 8.1f), 0f);
+        rb.MovePosition(deerPos);
         timer = spawnDelay;
+    }
+
+    IEnumerator initialSpawn()
+    {
+        while (deerCount < 1)
+        {
+            Instantiate(deer, rb.position, Quaternion.identity);
+            deerCount++;
+            initialSpawnCount++;
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        timer -= Time.deltaTime;
+        if (initialSpawnCount == 0)
+        {
+            StartCoroutine(initialSpawn());
+        }
+        if (TimerScript.keepTiming)
+        {
+            timer -= Time.deltaTime;
+        }
         if (timer <= 0)
         {
-            Respawn2();
+            if (deerCount < levelScript.level) { Respawn2(); }
+            else { timer = spawnDelay; }
         }
+        deerCount = GameObject.FindGameObjectsWithTag("deer").Length;
+    }
+
+    private void OnDrawGizmos()
+    {
     }
     public void TakeDamage(int damage)
     {
@@ -47,16 +77,14 @@ public class MoveDeer : MonoBehaviour
     public void Die()
     {
         gameObject.SetActive(false);
-        scoreCounter.deerCount -= 1;
+        deerCount -= 1;
 
         scoreCounter.score += 10;
 
-        if (scoreCounter.deerCount < 1)
+        if (deerCount < 1)
         {
             Respawn();
         }
-
-        //Respawn(levelScript.level, scoreCounter.score);
 
         
     }
@@ -64,27 +92,26 @@ public class MoveDeer : MonoBehaviour
 
     void Respawn()
     {
-        /*Vector2 deerPos = new Vector2(Random.Range(-8.1f, 8.1f), 0f);
-        gameObject.transform.SetPositionAndRotation(deerPos, gameObject.transform.rotation);
-        health = 100;
-        gameObject.SetActive(true);
-        if(timer <= 0)
-        {
-            Vector2 deerPos2 = new Vector2(Random.Range(-8.1f, 8.1f), 0f);
-            Instantiate(deer, deerPos2, deer.transform.rotation);
-        }*/
-
         Vector2 deerPos = new Vector2(Random.Range(-8.1f, 8.1f), 0f);
-        gameObject.transform.SetPositionAndRotation(deerPos, gameObject.transform.rotation);
+        gameObject.transform.SetPositionAndRotation(deerPos, Quaternion.identity);
         health = 100;
         gameObject.SetActive(true);
-
     }
 
     void Respawn2()
     {
-        Vector2 deerPos2 = new Vector2(Random.Range(-8.1f, 8.1f), 0f);
-        Instantiate(deer, deerPos2, deer.transform.rotation);
+        deerPos.x = Random.Range(-8.1f, 8.1f);
+        while (isSpotAvailable(deerPos) == false)
+        {
+            deerPos.x = Random.Range(-8.1f, 8.1f);
+        }
+        Instantiate(deer, deerPos, Quaternion.identity);
         timer = spawnDelay;
+    }
+
+    bool isSpotAvailable(Vector2 position)
+    {
+        Collider2D[] intersections = Physics2D.OverlapCircleAll(position, 3f);
+        return intersections.Length == 0;
     }
 }

@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 
 public class levelScript : MonoBehaviour
 {
 
-    public Text levelText;
+    public TMPro.TextMeshProUGUI levelText;
 
     public static int level = 1;
     // Start is called before the first frame update
     void Start()
     {
-        levelText = GetComponent<Text>();
+        levelText = GetComponent<TMPro.TextMeshProUGUI>();
     }
 
     // Update is called once per frame
@@ -27,11 +26,6 @@ public class levelScript : MonoBehaviour
         else if (TimerScript.time == 0 && scoreCounter.score < 100)
         {
             levelText.text = "Time's Up!";
-        }
-
-        if(level == 2)
-        {
-            
         }
     }
 }

@@ -33,7 +33,7 @@ public class MoveLeft : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     void Update()
     {
         moveVelocity = -transform.right * speed;
-        if (moveLeft)
+        if (moveLeft && TimerScript.keepTiming)
         {
             Left();
         }

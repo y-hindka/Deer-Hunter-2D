@@ -30,7 +30,7 @@ public class MoveSight : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
 
         moveVelocity = transform.right * speed;
-        if (moveRight)
+        if (moveRight && TimerScript.keepTiming)
         {
             MoveRight();
         }
